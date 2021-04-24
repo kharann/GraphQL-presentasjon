@@ -1,6 +1,6 @@
 import { themes } from "mdx-deck";
 
-export const theme = themes.future;
+export const theme = themes.dark;
 
 <Split>
 
@@ -9,44 +9,86 @@ export const theme = themes.future;
   style={{ width: "100%", padding: "4rem" }}
 />
 
-# INTRO TIL GRAPHQL🤯
+# Kurs i GraphQL 🤯
 
 </Split>
 
 <Notes>
 
-- Only visible in presenter mode
-- Markdown syntax can be used with empty lines around the content
+- Velkomme alle sammen!
 
 </Notes>
 
 ---
 
-## Mål med kurset
+# $ whoami
 
-- Lære hva GraphQL er.
-- Lære kjernekonseptene bak GraphQL
+- Anhkha, 3 Klasse Informatikk :wave:
+- Ny i Junior Consulting!
 
 ---
 
-# Scenario!
+# Målet med kurset :rocket:
 
-- Dominos
+- Lære litt om bakgrunnen bak GraphQL
+- Lære grunnprinsippen bak GraphQL slik at man kan lage et API i hvilket så helst språk
+- Lære arbeidsmetodikk tett knyttet opp med GraphQL
+
+---
+
+# GraphQL prøver å løse noen av problemene ved REST
+
+- Data fetching
+
+<SplitRight>
+<img
+  src={require("./assets/rest_api.png")}
+  style={{ width: "100%" }}
+/>
+
+<Steps>
+
+- Et endepunkt her, og et endepunkt der...
+- Endepunktet gir ikke all dataen du trenger
+- Endepunktet gir ALTFOR mye data
+- Det er ikke intuitivt hvordan man gjør noen ting
+
+</Steps>
+</SplitRight>
 
 ---
 
 <SplitRight>
-
 <img
-  src={require("./assets/2021-04-17-13-49-20.png")}
+  src={require("./assets/Peek 2021-04-17 14-02.gif")}
   style={{ width: "100%", padding: "1rem" }}
 />
+
+# Det blir fort rotete
+
+<Steps>
+
+- Usikkerhet rundt typing på data
+- Usikkerhet på hvor ting ligger!
+- Vanskelig å refactore
+
+</Steps>
 
 </SplitRight>
 
 ---
 
+# REST vs GraphQL, Data Fetching
+
+<Split>
+
 <img
-  src={require("./assets/Peek 2021-04-17 14-02.gif")}
+  src={require("./assets/fetching_old.png")}
   style={{ width: "100%", padding: "1rem" }}
 />
+<img
+  src={require("./assets/fetching.png")}
+  style={{ width: "100%", padding: "1rem" }}
+/>
+
+</Split>
