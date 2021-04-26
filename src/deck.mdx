@@ -1,4 +1,6 @@
 import { themes } from "mdx-deck";
+import { CodeSurfer, CodeSurferColumns, Step } from "code-surfer";
+import { dracula, shadesOfPurple } from "@code-surfer/themes";
 
 export const theme = themes.dark;
 
@@ -23,17 +25,17 @@ export const theme = themes.dark;
 
 # <span style={{color: '#01E700'}}>$</span> whoami
 
-- Anhkha, 3 Klasse Informatikk :wave:
+- Anhkha, 3 Klasse Informatikk :wave:.
 - Ny i Junior Consulting!
 
 ---
 
 # Målet med kurset :rocket:
 
-- Lære litt om bakgrunnen bak GraphQL
-- Lære forskjellen mellom REST og GraphQL
-- Lære grunnprinsippen bak GraphQL slik at man kan lage et API i hvilket så helst språk
-- Lære arbeidsmetodikk tett knyttet opp med GraphQL
+- Lære litt om bakgrunnen bak GraphQL.
+- Lære forskjellen mellom REST og GraphQL.
+- Lære grunnprinsippen bak GraphQL slik at man kan lage et API i hvilket så helst språk.
+- Lære arbeidsmetodikk tett knyttet opp med GraphQL.
 
 ---
 
@@ -50,9 +52,9 @@ export const theme = themes.dark;
 <Steps>
 
 - Et endepunkt her, og et endepunkt der...
-- Endepunktet gir ikke all dataen du trenger
-- Endepunktet gir ALTFOR mye data
-- Det er ikke intuitivt hvordan man gjør noen ting
+- Endepunktet gir ikke all dataen du trenger.
+- Endepunktet gir ALTFOR mye data.
+- Det er ikke intuitivt hvordan man gjør noen ting.
 
 </Steps>
 </SplitRight>
@@ -65,13 +67,13 @@ export const theme = themes.dark;
   style={{ width: "100%", padding: "1rem" }}
 />
 
-# Det blir fort rotete
+# Det blir fort <span style={{"color" : "#F0389C"}}>rotete</span>
 
 <Steps>
 
-- Usikkerhet rundt typing på data
+- Usikkerhet rundt typing på data.
 - Usikkerhet på hvor ting ligger!
-- Vanskelig å refactore
+- Vanskelig å refactore.
 
 </Steps>
 
@@ -97,3 +99,229 @@ export const theme = themes.dark;
 />
 
 </Split>
+
+<Notes>
+
+- Klassisk REST har flere endepunkter for ulike ting.
+- Man kan ha et endepunkt for brukeren, et endepunkt for innlegg som brukeren har lagd og et endepunkt for følgere av brukeren.
+- Med GraphQL sender man en spørring ("query"), som forklarer hva API kallet ønsker å gjøre.
+- I dette tilfellet vil den hente en bruker, med følgende ID, med disse feltene i tillegg til innlegg og de 3 siste følgerene.
+
+</Notes>
+
+---
+
+# Hvilket problemer løser dette?
+
+<Steps>
+
+- Ingen overfetching 📦.
+  - Slipper å fetche unødvendig data.
+- Ingen underfetching og N+1 problemet 🤏.
+  - All dataen man trenger for en side er ikke i endepunktet.
+  - For å vise alle brukere med følgere så må man fetche `/users` og deretter `/users/<user_id>/followers` per bruker.
+- Hyppig iterativ prosess av produktet på frontend-en 🏃‍♂️.
+
+</Steps>
+
+<Notes>
+
+- Man slipper å fetche for mye, og unødvendig data. Bandwidth friendly
+- N+1 betyr at man må fetche en ekstra gang, per N gang
+- For å vise alle følgere, så må man fetche `/users`, og deretter `/users/<user_id>/followers` for hver bruker
+- Vanlig å kategorisere endepunkter basert på views. Man trenger ikke å gjøre flere GET kalls for å få all dataen man trenger for en side
+- Med REST så er det en risiko at med hver endring til UIet (gjennom feedbacks) kan kreve endringer i hvilken data som vises.
+
+</Notes>
+
+---
+
+<CodeSurferColumns themes={[shadesOfPurple , dracula]}>
+
+<Step title="Det er mulig å autogenere typer i frontenden for f.eks. TypeScript, Kotlin og Swift🤯">
+
+```graph showNumbers subtitle="GraphQL Schema"
+type User {
+  id: ID!
+  email: String!
+  age: Int
+}
+```
+
+```typescript showNumbers subtitle="TypeScript"
+export type Scalars = {
+  ID: string;
+  String: string;
+  Boolean: boolean;
+  Int: number;
+  Float: number;
+};
+
+export type User = {
+  __typename?: "User";
+  id: Scalars["ID"];
+  email: Scalars["String"];
+  age?: Maybe<Scalars["Int"]>;
+};
+```
+
+</Step>
+
+<Step title="Her ser man at GraphQL typen matcher TypeScript typen🤝">
+
+```diff 1:5
+
+```
+
+```diff 9:14
+
+```
+
+</Step>
+</CodeSurferColumns>
+
+<Notes>
+
+- Man kan autogenere typer.
+- Om du utvikler i Kotlin, Swift eller typescript.
+- Noen rare ord her, hva er en Skalar?
+
+</Notes>
+
+---
+
+# GraphQL 101
+
+<Steps>
+
+- GraphQL er skrevet med en syntax som heter SDL (Schema Definition Language).
+- GraphQL bruker sitt eget type-system
+- Scalars er rot-typer som ikke inneholder noe nøstet data.
+- Vi har 5 "Scalars" som er innebygd by default:
+  - String
+  - Int
+  - Float
+  - Boolean
+  - ID
+
+</Steps>
+
+---
+
+<CodeSurfer theme={shadesOfPurple}>
+
+```graph showNumbers title="Intro til å definere schema med SDL"
+type User {
+  id: ID!
+  email: String!
+  age: Int
+}
+```
+
+```diff 2,3 subtitle='Her definers "Field"-ene id og email. Utropstegnet markerer feltet som non-nullable'
+
+
+```
+
+```diff 4 subtitle='Feltet "age" er dermed en nullable-verdi''
+
+```
+
+```graph showNumbers subtitle='Vi legger til en "Country"-type for å lage en relasjon'
+type Country {
+  code: ID!
+  name: String!
+}
+
+type User {
+  id: ID!
+  email: String!
+  age: Int
+  birthplace: Country!
+}
+```
+
+```graph showNumbers subtitle='Vi lager en "Allergy"-enum og kobler den til brukeren.'
+enum Allergy {
+  MILK
+  GLUTEN
+  PEANUTS
+}
+
+type Country {
+  code: ID!
+  name: String!
+}
+
+type User {
+  id: ID!
+  email: String!
+  age: Int
+  birthplace: Country!
+  allergies: [Allergy!]!
+}
+```
+
+```diff title='Selv med få "Scalars" så kan man få til ganske mye'
+
+```
+
+</CodeSurfer>
+
+<Notes>
+
+- Begynner med keywordet "type" når vi definere en type
+- Ligner litt på TypeScript
+- Man må være eksplisitt når noe er non-nullable i SDL iforhold til typescript, kotlin osv.
+- Man definere en relasjon ved å skrive type-navnet
+- Vi definere en enum med nøkkelordet enum
+- Utroppstegnet inni klammene sier at ingen av enhetene på innsiden kan være null.
+- Utroppstegnet på utsiden sier at listen må finnes, slik at vi kan få en tom liste istedenfor null
+
+</Notes>
+
+---
+
+# GraphQL 101: The Schema🧑‍🏫
+
+- Ditt GraphQL Schema forteller klienten hva den kan og ikke kan gjøre.
+- Kan bli sett på som en <span style={{"color" : "#F0389C"}}>kontrakt</span> mellom server og klient om hvordan APIet skal se ut.
+- Består av tre spesielle rot-typer
+
+---
+
+<CodeSurfer theme={shadesOfPurple} >
+
+```graph showNumbers
+type User {
+  id: ID!
+  email: String!
+  age: Int
+}
+```
+
+```graph showNumbers
+enum Allergy {
+  MILK
+  GLUTEN
+  PEANUTS
+}
+
+type User {
+  id: ID!
+  email: String!
+  age: Int
+  allergies: [Allergy!]!
+}
+
+type Query {
+  findUser(id: ID!): User
+  findAllUsers: [User]!
+}
+
+type Mutation {
+  createUser(email: String!, age: Int): User
+}
+```
+
+</CodeSurfer>
