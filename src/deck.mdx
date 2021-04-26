@@ -1,8 +1,22 @@
 import { themes } from "mdx-deck";
 import { CodeSurfer, CodeSurferColumns, Step } from "code-surfer";
 import { dracula, shadesOfPurple } from "@code-surfer/themes";
+import { dracula as dracula2 } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-export const theme = themes.dark;
+<!-- Remind me to never use MDX-Deck again because holy shit this is hacky and buggy as hell -->
+
+export const theme = {
+  ...themes.dark,
+  components: {
+    ...themes.prism.components,
+    code: (props) =>
+      themes.prism.components.code({
+        ...props,
+        className: props.className.replace("graph", `${"graph" + "ql"}`),
+        style: dracula2,
+      }),
+  },
+};
 
 <Split>
 
@@ -136,7 +150,7 @@ export const theme = themes.dark;
 
 ---
 
-<CodeSurferColumns themes={[shadesOfPurple , dracula]}>
+<CodeSurferColumns themes={[dracula, shadesOfPurple ]}>
 
 <Step title="Det er mulig å autogenere typer i frontenden for f.eks. TypeScript, Kotlin og Swift🤯">
 
@@ -208,7 +222,7 @@ export type User = {
 
 ---
 
-<CodeSurfer theme={shadesOfPurple}>
+<CodeSurfer theme={dracula}>
 
 ```graph showNumbers title="Intro til å definere schema med SDL"
 type User {
@@ -286,11 +300,205 @@ type User {
 
 - Ditt GraphQL Schema forteller klienten hva den kan og ikke kan gjøre.
 - Kan bli sett på som en <span style={{"color" : "#F0389C"}}>kontrakt</span> mellom server og klient om hvordan APIet skal se ut.
-- Består av tre spesielle rot-typer
+- Består av tre spesielle rot-typer som blir kalt "Operations"
+
+<!-- Ordet graph ql i et ord brekker heller gatsby parseren. Sykt kult -->
+
+```graph
+
+```
 
 ---
 
-<CodeSurfer theme={shadesOfPurple} >
+<CodeSurferColumns themes={[dracula, shadesOfPurple]}>
+
+<Step title="GraphQL 101: En spørring🔎">
+
+```graph showNumbers
+enum Allergy {
+  MILK
+  GLUTEN
+  PEANUTS
+}
+
+type Country {
+  code: ID!
+  name: String!
+}
+
+type User {
+  id: ID!
+  email: String!
+  age: Int
+  birthplace: Country!
+  allergies: [Allergy!]!
+}
+
+type Query {
+  findUserById(id: ID!): User
+  findAllusers: [User!]!
+}
+
+type Mutation {
+  createUser(email: String!, age: Int): User
+}
+
+type Subscription {
+  userCreated: User
+}
+```
+
+```graph showNumbers
+  query {
+    findAllUsers {
+      id
+      email
+    }
+  }
+```
+
+</Step>
+
+<Step subtitle="Man matcher på operasjonen 'Query'">
+
+```diff 20[6:11]
+
+```
+
+```diff 1[3:8]
+
+```
+
+</Step>
+
+<Step subtitle="Deretter velger man en av feltene som ligger i operasjonen">
+
+```diff 21
+
+```
+
+```diff 2
+
+```
+
+</Step>
+
+<Step subtitle="Resultatet er en 'User', så vi må velge felter som finnes i 'User'-typen">
+
+```diff 12:14,18,21[25:30]
+
+```
+
+```diff 2:4
+
+```
+
+</Step>
+
+<Step subtitle="Om man ønsker å utføre en mutation, så må man ha 'mutation' ytterst i spørringen">
+
+```diff 25:27
+
+```
+
+```graph showNumbers
+  query {
+    findAllUsers {
+      id
+      email
+    }
+  }
+
+  mutation CreateUser($email: ID!) {
+    createUser(email: $email) {
+      id
+      email
+    }
+  }
+```
+
+</Step>
+
+<Step subtitle="Det er mulig å navngi spørringene dine, og sette input-variablene dynamisk">
+
+```diff
+
+```
+
+```diff 8[11:34],9[23:29]
+
+```
+
+</Step>
+
+<Step subtitle="La oss spør om mer data! Vi vil ha med 'age' og 'birthplace'">
+
+```diff 7:10,12,15,16,18
+
+```
+
+```graph showNumbers
+  query {
+    findAllUsers {
+      id
+      email
+      age
+      birthplace {
+        code
+        name
+      }
+    }
+  }
+
+  mutation CreateUser($email: ID!) {
+    createUser(email: $email) {
+      id
+      email
+      age
+      birthplace {
+        code
+        name
+      }
+    }
+  }
+```
+
+</Step>
+
+<Step subtitle="GraphQL er ekstremt fleksibelt, og du kan tilpase dine spørringer til dine krav">
+
+```diff
+
+```
+
+```diff
+
+```
+
+</Step>
+
+</CodeSurferColumns>
+
+<Notes>
+
+- På venstre så har vi Schemaet vårt, på høyre har vi en spørring
+
+</Notes>
+
+---
+
+# GraphQL 101: The playground 🎨
+
+- GraphQL inneholder et nyttig verktøy som heter playground
+- Inneholder typedokumentasjon, god auto-complete og en fin schema-explorer
+
+---
+
+Et GraphQL api med oversikt over land og kontinenter: https://countries.trevorblades.com
+
+---
+
+<CodeSurfer theme={dracula} >
 
 ```graph showNumbers
 type User {
