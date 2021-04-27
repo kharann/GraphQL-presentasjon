@@ -305,6 +305,18 @@ type User {
 <!-- Ordet graph ql i et ord brekker heller gatsby parseren. Sykt kult -->
 
 ```graph
+type Query {
+  findUserById(id: ID!): User
+  findAllusers: [User!]!
+}
+
+type Mutation {
+  createUser(email: String!, age: Int): User
+}
+
+type Subscription {
+  userCreated: User
+}
 
 ```
 
@@ -373,7 +385,7 @@ type Subscription {
 
 <Step subtitle="Deretter velger man en av feltene som ligger i operasjonen">
 
-```diff 21
+```diff 22
 
 ```
 
@@ -498,38 +510,70 @@ Et GraphQL api med oversikt over land og kontinenter: https://countries.trevorbl
 
 ---
 
-<CodeSurfer theme={dracula} >
+# GraphQL 101: The Frontend
 
-```graph showNumbers
-type User {
-  id: ID!
-  email: String!
-  age: Int
+```tsx
+import { gql, useQuery } from "@apollo/client";
+
+const GET_DOGS = gql`
+  query GetDogs {
+    dogs {
+      id
+      breed
+    }
+  }
+`;
+
+function Dogs({ onDogSelected }) {
+  const { loading, error, data } = useQuery(GET_DOGS);
+
+  if (loading) return "Loading...";
+  if (error) return `Error! ${error.message}`;
+
+  return (
+    <select name="dog" onChange={onDogSelected}>
+      {data.dogs.map((dog) => (
+        <option key={dog.id} value={dog.breed}>
+          {dog.breed}
+        </option>
+      ))}
+    </select>
+  );
 }
 ```
 
-```graph showNumbers
-enum Allergy {
-  MILK
-  GLUTEN
-  PEANUTS
-}
+---
 
-type User {
-  id: ID!
-  email: String!
-  age: Int
-  allergies: [Allergy!]!
-}
+# Det er raskt å iterere
 
-type Query {
-  findUser(id: ID!): User
-  findAllUsers: [User]!
-}
+<Split>
 
-type Mutation {
-  createUser(email: String!, age: Int): User
-}
+<img src={require("./assets/mock_1.jpg")} />
+
+<img src={require("./assets/mock_2.jpg")} />
+
+</Split>
+
+---
+
+# Kjør parallel-utvikling med å mocke APIet
+
+```ts
+    User: () => ({
+        id: () => casual.uuid,
+        email: () => casual.email,
+        possword: () => casual.password
+    }),
+      Query: () => ({
+        user: () => ({ __typename: 'User' }),
+        allUsers: () => new Array(casual.integer(2, 6)).fill({ __typename: 'User' }),
+    }),
 ```
 
-</CodeSurfer>
+---
+
+# Er litt overkill for enkle cases🧰
+
+---
+
+# The end
