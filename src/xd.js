@@ -1,1 +1,3 @@
-import { nord } from 'react-syntax-highlighter/dist/esm/styles/prism'
+const Prism = require("prismjs")
+
+Prism.languages.graph = Prism.languages.graphql
